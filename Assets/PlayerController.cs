@@ -19,11 +19,14 @@ public class PlayerController : MonoBehaviour
     public GunManager gunManager;
     public GameUIManager uiManager;
     public int hp = 100;
+    public AudioSource step;
+    private bool isWalking = false;
 
     // Use this for initialization
     void Start()
     {
         animatorController = this.GetComponent<Animator>();
+        //step = this.GetComponent<AudioSource>();
     }
 
     public void Hit(int value)
@@ -74,6 +77,8 @@ public class PlayerController : MonoBehaviour
             gunManager.FlamingWeaponClose();
         }
 
+        
+
         //決定鍵盤input的結果
         Vector3 movDirection = Vector3.zero;
         if (Input.GetKey(KeyCode.W)) { movDirection.z += 1; }
@@ -90,6 +95,17 @@ public class PlayerController : MonoBehaviour
             else { currentSpeed = MoveSpeed; }
         }
         animatorController.SetFloat("Speed", currentSpeed);
+
+        if (currentSpeed != 0 && !isWalking)
+        {
+            step.Play();
+            isWalking = true;
+        }
+        if(currentSpeed == 0 && isWalking)
+        {
+            step.Pause();
+            isWalking = false;
+        }
 
         //轉換成世界座標的方向
         Vector3 worldSpaceDirection = movDirection.z * rotateYTransform.transform.forward +
